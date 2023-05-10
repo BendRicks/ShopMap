@@ -5,20 +5,20 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Setter
 @Getter
@@ -42,10 +43,10 @@ public class User {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "username", nullable = false, length = 45)
+    @Column(name = "username", unique = true, nullable = false, length = 45)
     private String username;
 
-    @Column(name = "email", length = 100)
+    @Column(name = "email", unique = true, length = 100)
     private String email;
 
     @Column(name = "creation_time", nullable = false)
@@ -64,7 +65,7 @@ public class User {
     @Column(name = "account_status", nullable = false, length = 20)
     private AccountStatus accountStatus;
 
-    @OneToMany(mappedBy = "creator")
+    @OneToMany(mappedBy = "creator", fetch =  FetchType.EAGER)
     @JsonManagedReference
     private List<Shop> shops;
 
@@ -72,4 +73,16 @@ public class User {
         return Collections.singletonList(new SimpleGrantedAuthority(role.name()));
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        User user = (User) o;
+        return getId() != null && Objects.equals(getId(), user.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

@@ -13,7 +13,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -22,10 +21,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Setter
 @Getter
@@ -49,6 +50,12 @@ public class Shop {
     @Column(name = "name", nullable = false, length = 45)
     private String name;
 
+    @Column(name = "description", length = 1000, nullable = false)
+    private String description;
+
+    @Column(name = "main_image", length = 1000, nullable = false)
+    private String mainImageURL;
+
     @Column(name = "creation_time", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
@@ -62,4 +69,35 @@ public class Shop {
     @JsonManagedReference
     private List<Address> addresses;
 
+    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<AdditionalImage> additionalImages;
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Shop shop = (Shop) o;
+        return getId() != null && Objects.equals(getId(), shop.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Shop{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", mainImageURL='" + mainImageURL + '\'' +
+                ", creationTime=" + creationTime +
+                ", shopStatus=" + shopStatus +
+                ", addresses=" + addresses +
+                ", additionalImages=" + additionalImages +
+                '}';
+    }
 }
