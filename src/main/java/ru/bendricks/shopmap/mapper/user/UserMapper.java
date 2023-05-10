@@ -1,11 +1,20 @@
 package ru.bendricks.shopmap.mapper.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.bendricks.shopmap.dto.entity.UserDTO;
 import ru.bendricks.shopmap.entity.User;
+import ru.bendricks.shopmap.mapper.shop.ShopListMapper;
 
 @Component
 public class UserMapper {
+
+    private final ShopListMapper listMapper;
+
+    @Autowired
+    public UserMapper(ShopListMapper listMapper) {
+        this.listMapper = listMapper;
+    }
 
     public UserDTO toDTO(User user){
         if (user == null){
@@ -17,7 +26,8 @@ public class UserMapper {
                 .email(user.getEmail())
                 .creationTime(user.getCreationTime())
                 .role(user.getRole())
-                .shops(user.getShops())
+                .status(user.getAccountStatus())
+                .shops(listMapper.toDTORestricted(user.getShops()))
                 .build();
     }
 
@@ -31,6 +41,7 @@ public class UserMapper {
                 .email(user.getEmail())
                 .creationTime(user.getCreationTime())
                 .role(user.getRole())
+                .status(user.getAccountStatus())
                 .build();
     }
 
@@ -44,7 +55,7 @@ public class UserMapper {
                 .email(userDTO.getEmail())
                 .creationTime(userDTO.getCreationTime())
                 .role(userDTO.getRole())
-                .shops(userDTO.getShops())
+                .shops(listMapper.toModel(userDTO.getShops()))
                 .build();
     };
 

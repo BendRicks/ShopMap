@@ -29,4 +29,11 @@ public class ShopListMapper {
         return shopList.stream().map(shopMapper::toDTO).toList();
     };
 
+    public List<ShopDTO> toDTORestricted(List<Shop> shopList){
+        if (shopList == null){
+            return null;
+        }
+        return shopList.stream().map(shopMapper::toDTORestricted).toList();
+    };
+
 }

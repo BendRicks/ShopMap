@@ -1,22 +1,13 @@
 package ru.bendricks.shopmap.mapper.address;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.bendricks.shopmap.dto.entity.AddressDTO;
-import ru.bendricks.shopmap.dto.entity.create.AddressCreateDTO;
 import ru.bendricks.shopmap.entity.Address;
 import ru.bendricks.shopmap.mapper.shop.ShopMapper;
 
 @Component
 public class AddressMapper {
-
-//    private final ShopMapper shopMapper;
-//
-//    @Autowired
-//    public AddressMapper(@Lazy ShopMapper shopMapper) {
-//        this.shopMapper = shopMapper;
-//    }
 
     public Address toModel(AddressDTO addressDTO) {
         if (addressDTO == null){
@@ -32,7 +23,7 @@ public class AddressMapper {
                 .build();
     }
 
-    public Address toModel(AddressCreateDTO addressCreateDTO) {
+    public Address createDTOToModel(AddressDTO addressCreateDTO) {
         if (addressCreateDTO == null){
             return null;
         }
@@ -45,23 +36,7 @@ public class AddressMapper {
                 .build();
     }
 
-    ;
-
     public AddressDTO toDTO(Address address) {
-        if (address == null){
-            return null;
-        }
-        return AddressDTO.builder()
-                .id(address.getId())
-                .city(address.getCity())
-                .district(address.getDistrict())
-                .street(address.getStreet())
-                .building(address.getBuilding())
-                .room(address.getRoom())
-                .build();
-    }
-
-    public AddressDTO toDTORestricted(Address address) {
         if (address == null){
             return null;
         }

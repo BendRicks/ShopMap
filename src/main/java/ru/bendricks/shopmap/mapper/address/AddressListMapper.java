@@ -3,7 +3,6 @@ package ru.bendricks.shopmap.mapper.address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.bendricks.shopmap.dto.entity.AddressDTO;
-import ru.bendricks.shopmap.dto.entity.create.AddressCreateDTO;
 import ru.bendricks.shopmap.entity.Address;
 import java.util.List;
 
@@ -23,17 +22,17 @@ public class AddressListMapper {
         }
         return addressDTOList.stream().map(addressMapper::toModel).toList();
     };
-    public List<Address> createDTOToModel(List<AddressCreateDTO> addressList){
+    public List<Address> createDTOToModel(List<AddressDTO> addressList){
         if (addressList == null){
             return null;
         }
-        return addressList.stream().map(addressMapper::toModel).toList();
+        return addressList.stream().map(addressMapper::createDTOToModel).toList();
     };
     public List<AddressDTO> toDTO(List<Address> addressList){
         if (addressList == null){
             return null;
         }
-        return addressList.stream().map(addressMapper::toDTORestricted).toList();
+        return addressList.stream().map(addressMapper::toDTO).toList();
     };
 
 }
