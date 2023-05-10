@@ -1,5 +1,7 @@
 package ru.bendricks.shopmap.controller;
 
+import org.postgresql.util.PSQLException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -7,11 +9,15 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.bendricks.shopmap.dto.MessageResponse;
+import ru.bendricks.shopmap.exception.NotAuthorizedException;
 import ru.bendricks.shopmap.exception.NotCreatedException;
+import ru.bendricks.shopmap.exception.NotEnoughAuthoritiesException;
 import ru.bendricks.shopmap.exception.NotFoundException;
 import ru.bendricks.shopmap.exception.TooMuchShopsException;
+import ru.bendricks.shopmap.util.constraints.GeneralConstants;
 
 import java.nio.file.AccessDeniedException;
+import java.util.Arrays;
 
 @ControllerAdvice
 public class ExceptionHandleController extends ResponseEntityExceptionHandler {
@@ -22,7 +28,27 @@ public class ExceptionHandleController extends ResponseEntityExceptionHandler {
                 new MessageResponse(
                         exception.getEntityName().concat(" not found"),
                         System.currentTimeMillis()
-                ), HttpStatus.NOT_FOUND
+                ), HttpStatus.NO_CONTENT
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<MessageResponse> handleNotAuthorizedException(NotAuthorizedException exception) {
+        return new ResponseEntity<>(
+                new MessageResponse(
+                        exception.getMessage(),
+                        System.currentTimeMillis()
+                ), HttpStatus.UNAUTHORIZED
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<MessageResponse> handleNotEnoughAuthoritiesException(NotEnoughAuthoritiesException exception) {
+        return new ResponseEntity<>(
+                new MessageResponse(
+                        exception.getMessage(),
+                        System.currentTimeMillis()
+                ), HttpStatus.FORBIDDEN
         );
     }
 
@@ -47,13 +73,24 @@ public class ExceptionHandleController extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<MessageResponse> handleIllegalArgumentException(IllegalArgumentException exception) {
-        return new ResponseEntity<>(
-                new MessageResponse(
-                        "Illegal params values",
-                        System.currentTimeMillis()
-                ), HttpStatus.BAD_REQUEST
-        );
+    public ResponseEntity<MessageResponse> handleSQLException(PSQLException exception) {
+        logger.error("SQL exception");
+        switch (exception.getSQLState()){
+            case GeneralConstants.SQLStateConstants.UNIQUE_CONSTRAINT:
+                return new ResponseEntity<>(
+                        new MessageResponse(
+                                "Such shop name already exists",
+                                System.currentTimeMillis()
+                        ), HttpStatus.BAD_REQUEST
+                );
+            default:
+                return new ResponseEntity<>(
+                        new MessageResponse(
+                                "Illegal params values",
+                                System.currentTimeMillis()
+                        ), HttpStatus.BAD_REQUEST
+                );
+        }
     }
 
     @ExceptionHandler
