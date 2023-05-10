@@ -1,7 +1,6 @@
 package ru.bendricks.shopmap.controller;
 
 import org.postgresql.util.PSQLException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,7 +16,6 @@ import ru.bendricks.shopmap.exception.TooMuchShopsException;
 import ru.bendricks.shopmap.util.constraints.GeneralConstants;
 
 import java.nio.file.AccessDeniedException;
-import java.util.Arrays;
 
 @ControllerAdvice
 public class ExceptionHandleController extends ResponseEntityExceptionHandler {
