@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.bendricks.shopmap.entity.AccountStatus;
-import ru.bendricks.shopmap.entity.Shop;
 import ru.bendricks.shopmap.entity.UserRole;
 
 import java.time.LocalDateTime;
@@ -23,17 +22,19 @@ import java.util.List;
 @AllArgsConstructor
 public class UserDTO {
 
-    @NotNull(message = "Must not be empty")
+    @NotNull(message = "Must not be empty", groups = {UpdateInfo.class})
     private Integer id;
 
-    @Size(min = 2, max = 45, message = "Length must be between 2 and 45")
-    public String username;
+    @NotBlank(message = "Must not be empty", groups = {CreateInfo.class})
+    @Size(min = 2, max = 45, message = "Length must be between 2 and 45", groups = {UpdateInfo.class, CreateInfo.class})
+    private String username;
 
-    @Size(min = 7, max = 100, message = "Length must be between 2 and 45")
-    public String email;
+    @Size(min = 7, max = 100, message = "Length must be between 2 and 45", groups = {UpdateInfo.class, CreateInfo.class})
+    private String email;
 
     private LocalDateTime creationTime;
     private UserRole role;
-    private List<Shop> shops;
+    private AccountStatus status;
+    private List<ShopDTO> shops;
 
 }
