@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 @Component
+@Slf4j
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
@@ -36,12 +38,6 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (authToken == null){
-            var cookie = Arrays.stream(request.getCookies()).filter(el -> el.getName().equals("jwt-token")).findAny();
-            if (cookie.isPresent()){
-                authToken = cookie.get().getValue();
-            }
-        }
 
         if (authToken != null && !authToken.isBlank() && authToken.startsWith(GeneralConstants.BEARER_HEADER_TOKEN)){
             String jwt = authToken.substring(GeneralConstants.JWT_START_INDEX);
@@ -51,13 +47,14 @@ public class JWTFilter extends OncePerRequestFilter {
             } else {
                 try {
                     int id = jwtUtil.validateTokenAndRetrieveClaim(jwt);
-                    UserDetailsInfo userDetails = new UserDetailsInfo(userService.findById(id));
+                    UserDetailsInfo userDetails = new UserDetailsInfo(userService.findUserById(id));
 
                     UsernamePasswordAuthenticationToken authenticationToken =
                             new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
 
                     if (SecurityContextHolder.getContext().getAuthentication() == null) {
                         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                        log.info("user id = " + id);
                     }
                 } catch (JWTVerificationException e){
                     response.setContentType(MediaType.APPLICATION_JSON_VALUE);

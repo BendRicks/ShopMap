@@ -9,8 +9,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.bendricks.shopmap.dto.PasswordChangeDTO;
+import ru.bendricks.shopmap.dto.SignUpDTO;
+import ru.bendricks.shopmap.entity.AccountStatus;
 import ru.bendricks.shopmap.entity.User;
 import ru.bendricks.shopmap.entity.UserRole;
+import ru.bendricks.shopmap.exception.NotCreatedException;
 import ru.bendricks.shopmap.repository.UserRepository;
 import ru.bendricks.shopmap.security.UserDetailsInfo;
 
@@ -60,10 +63,18 @@ public class AuthService implements UserDetailsService {
     }
 
     @Transactional
-    public User create(User user){
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(UserRole.ROLE_USER);
-        user.setCreationTime(LocalDateTime.now());
+    public User create(SignUpDTO signUpDTO){
+        if (!signUpDTO.getPassword().equals(signUpDTO.getPasswordRepeat())){
+            throw new NotCreatedException("Password repeat not matches with password");
+        }
+        User user = User.builder()
+                .username(signUpDTO.getUsername())
+                .email(signUpDTO.getEmail())
+                .role(UserRole.ROLE_USER)
+                .accountStatus(AccountStatus.NOT_VERIFIED)
+                .password(passwordEncoder.encode(signUpDTO.getPassword()))
+                .creationTime(LocalDateTime.now())
+                .build();
         userRepository.save(user);
         return user;
     }

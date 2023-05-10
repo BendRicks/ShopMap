@@ -26,7 +26,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain getSecurityFilterChain(HttpSecurity http, AuthenticationManager authManager, JWTFilter jwtFilter) throws Exception {
-        http.csrf().disable()
+        http.cors().and().csrf().disable()
 //                .authorizeHttpRequests()
 //                .requestMatchers("/api/employee/**", "/api/employee/add").hasRole("ADMIN")
 //                .requestMatchers("/api/shops", "/api/auth/login").permitAll()

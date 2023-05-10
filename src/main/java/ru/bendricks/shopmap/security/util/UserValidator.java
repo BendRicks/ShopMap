@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import ru.bendricks.shopmap.dto.entity.UserDTO;
-import ru.bendricks.shopmap.dto.entity.create.UserCreateDTO;
 import ru.bendricks.shopmap.security.service.AuthService;
 
 @Component
@@ -20,12 +19,12 @@ public class UserValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return clazz.equals(UserCreateDTO.class);
+        return clazz.equals(UserDTO.class);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
-        UserCreateDTO user = (UserCreateDTO) target;
+        UserDTO user = (UserDTO) target;
         if (!authService.isUsernameAvailable(user.getUsername()))
             errors.rejectValue("email", "", "User with such username already exists");
     }
