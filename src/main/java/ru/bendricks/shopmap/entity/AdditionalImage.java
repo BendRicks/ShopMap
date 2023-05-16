@@ -24,7 +24,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(schema = "main_schema", name = "additional_image")
+@Table(name = "additional_image")
 public class AdditionalImage {
 
     @Id

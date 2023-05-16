@@ -22,14 +22,13 @@ import java.util.List;
 @AllArgsConstructor
 public class UserDTO {
 
-    @NotNull(message = "Must not be empty", groups = {UpdateInfo.class})
+    @NotNull(message = "Must not be empty")
     private Integer id;
 
-    @NotBlank(message = "Must not be empty", groups = {CreateInfo.class})
-    @Size(min = 2, max = 45, message = "Length must be between 2 and 45", groups = {UpdateInfo.class, CreateInfo.class})
+    @Size(min = 2, max = 45, message = "Length must be between 2 and 45")
     private String username;
 
-    @Size(min = 7, max = 100, message = "Length must be between 2 and 45", groups = {UpdateInfo.class, CreateInfo.class})
+    @Size(min = 7, max = 100, message = "Length must be between 2 and 45")
     private String email;
 
     private LocalDateTime creationTime;

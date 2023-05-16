@@ -10,10 +10,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.bendricks.shopmap.dto.entity.ShopDTO;
+import ru.bendricks.shopmap.entity.AccountStatus;
 import ru.bendricks.shopmap.entity.Shop;
 import ru.bendricks.shopmap.entity.ShopStatus;
 import ru.bendricks.shopmap.entity.User;
 import ru.bendricks.shopmap.entity.UserRole;
+import ru.bendricks.shopmap.exception.BannedException;
 import ru.bendricks.shopmap.exception.NotEnoughAuthoritiesException;
 import ru.bendricks.shopmap.exception.NotFoundException;
 import ru.bendricks.shopmap.exception.TooMuchShopsException;
@@ -29,20 +31,14 @@ import java.util.List;
 public class ShopService {
 
     private final ShopRepository shopRepository;
-    private final UserService userService;
     private final ShopMapper mapper;
     private final ShopListMapper listMapper;
 
     @Autowired
-    public ShopService(ShopRepository shopRepository, UserService userService, ShopMapper mapper, ShopListMapper listMapper) {
+    public ShopService(ShopRepository shopRepository, ShopMapper mapper, ShopListMapper listMapper) {
         this.shopRepository = shopRepository;
-        this.userService = userService;
         this.mapper = mapper;
         this.listMapper = listMapper;
-    }
-
-    public List<Shop> getShops() {
-        return shopRepository.findAll();
     }
 
     @Transactional
@@ -52,6 +48,9 @@ public class ShopService {
         User user = ((UserDetailsInfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).user();
         if (shopRepository.countByCreator(user) >= 3 && user.getRole() != UserRole.ROLE_ADMIN) {
             throw new TooMuchShopsException("Too much shops");
+        }
+        if (user.getAccountStatus() == AccountStatus.NOT_VERIFIED){
+            throw new NotEnoughAuthoritiesException("Not verified");
         }
         shop.setCreator(user);
         shop.getAddresses().forEach((el) -> el.setShop(shop));
@@ -64,7 +63,11 @@ public class ShopService {
     }
 
     private Shop findById(int id) {
-        return shopRepository.findById(id).orElseThrow(() -> new NotFoundException("Contract"));
+        Shop shop = shopRepository.findById(id).orElseThrow(() -> new NotFoundException("Contract"));
+        if (shop.getShopStatus() == ShopStatus.BANNED) {
+            throw new BannedException("This shop is banned");
+        }
+        return shop;
     }
 
     public List<ShopDTO> getShopsByNameAndPage(String nameLike, Integer page, Integer size, Sort.Direction direction, String param) {
@@ -102,7 +105,6 @@ public class ShopService {
         );
         shop.getAddresses().forEach((el) -> el.setShop(shop));
         shop.getAdditionalImages().forEach((el) -> el.setShop(shop));
-        log.info(shop.toString());
         return mapper.toDTO(
                 shopRepository.save(
                         shop

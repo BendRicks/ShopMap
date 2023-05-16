@@ -29,7 +29,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600, allowCredentials = "true")
+@CrossOrigin(origins = "${cors.url}", maxAge = 3600, allowCredentials = "true")
 public class UserController {
 
     private final UserService userService;
@@ -37,12 +37,6 @@ public class UserController {
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
-    }
-
-    @GetMapping("/")
-    @ResponseStatus(HttpStatus.OK)
-    public List<UserDTO> getUsers() {
-        return userService.getUsers();
     }
 
     @GetMapping("/current/authorities")

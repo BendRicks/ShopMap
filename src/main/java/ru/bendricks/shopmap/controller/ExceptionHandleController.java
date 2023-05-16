@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.bendricks.shopmap.dto.MessageResponse;
+import ru.bendricks.shopmap.exception.BannedException;
 import ru.bendricks.shopmap.exception.NotAuthorizedException;
 import ru.bendricks.shopmap.exception.NotCreatedException;
 import ru.bendricks.shopmap.exception.NotEnoughAuthoritiesException;
@@ -51,6 +52,16 @@ public class ExceptionHandleController extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler
+    public ResponseEntity<MessageResponse> handleNotEnoughAuthoritiesException(BannedException exception) {
+        return new ResponseEntity<>(
+                new MessageResponse(
+                        exception.getMessage(),
+                        System.currentTimeMillis()
+                ), HttpStatus.FORBIDDEN
+        );
+    }
+
+    @ExceptionHandler
     public ResponseEntity<MessageResponse> handleUserNotCreatedException(NotCreatedException exception) {
         return new ResponseEntity<>(
                 new MessageResponse(
@@ -73,7 +84,7 @@ public class ExceptionHandleController extends ResponseEntityExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<MessageResponse> handleSQLException(PSQLException exception) {
         logger.error("SQL exception");
-        switch (exception.getSQLState()){
+        switch (exception.getSQLState()) {
             case GeneralConstants.SQLStateConstants.UNIQUE_CONSTRAINT:
                 return new ResponseEntity<>(
                         new MessageResponse(

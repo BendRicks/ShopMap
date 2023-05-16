@@ -22,7 +22,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(schema = "main_schema", name = "address")
+@Table(name = "address")
 public class Address {
 
     @Id
@@ -53,7 +53,6 @@ public class Address {
     @Override
     public String toString() {
         return "Address{" +
-                ", shop=" + shop +
                 ", city='" + city + '\'' +
                 ", district='" + district + '\'' +
                 ", street='" + street + '\'' +

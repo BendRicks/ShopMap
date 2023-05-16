@@ -17,7 +17,7 @@ public class SignUpDTO {
     @Size(min = 4, max = 45, message = "Username length must be between 4 and 45")
     private String username;
     @NotBlank(message = "Email must not be empty")
-    @Size(min = 5, max = 100, message = "Username length must be between 4 and 100")
+    @Size(min = 5, max = 100, message = "Email length must be between 5 and 100")
     private String email;
     @NotBlank(message = "Password must not be empty")
     @Size(min = 8, message = "Password length must be minimum 8")

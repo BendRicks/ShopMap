@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/shop_map
-    username: postgres
-    password: password
+    url: ${MYAPP_JDBC_URL}
+    username: ${MYAPP_JDBC_USER}
+    password: ${MYAPP_JDBC_PASS}
   jpa:
     properties:
       hibernate:
@@ -11,6 +11,8 @@ spring:
         show_sql: true
     hibernate:
       ddl-auto: update
+cors:
+  url: ${MYAPP_CORS_URL}
 
 jwt:
   secret: "mother_of_all_omelettes"

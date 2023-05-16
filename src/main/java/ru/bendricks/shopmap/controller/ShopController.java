@@ -24,7 +24,7 @@ import ru.bendricks.shopmap.service.ShopService;
 
 @RestController
 @RequestMapping("/api/shops")
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600, allowCredentials = "true")
+@CrossOrigin(origins = "${cors.url}", maxAge = 3600, allowCredentials = "true")
 public class ShopController {
 
     private final ShopService shopService;
